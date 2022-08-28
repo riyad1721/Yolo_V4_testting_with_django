@@ -1,0 +1,268 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="connect-src * 'unsafe-inline';">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/notie/dist/notie.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
+    integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-base.min.js"></script>
+  <style>
+    /* override styles here */
+
+    body {
+      background-color: #F1F3F4;
+    }
+
+    .terminal {
+      background-color: black;
+      background-image: #272822;
+      height: 54vh;
+      margin: 0;
+      overflow: hidden;
+      padding: 2rem;
+      color: #75BFC2;
+      font: 1.3rem Inconsolata, monospace;
+      text-shadow: 0 0 5px #C8C8C8;
+
+
+    }
+
+    ::selection {
+      background: #0080FF;
+      text-shadow: none;
+    }
+
+    pre {
+      margin: 0;
+    }
+
+    #container {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar sticky-top navbar-dark bg-dark mb-3"
+    style="background: linear-gradient(to right, #43c6ac, #191654)">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <h4 class="mx-5">GPH Ispat<i class="fa fa-video-camera text-danger" aria-hidden="true"></i></h4>
+      </a>
+      <div class="d-flex text-light me-2" id="status">
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid ">
+    <div class="row mx-4">
+      
+      <div class="col-md-7 px-1 py-3">
+        <div style="background-color: white;" class="py-4">
+          <div class="my-2"><img class="mx-auto d-block"
+              src="{% url 'video_feed' %}"
+              alt="Rtsp Stream" width="75%"></div>
+          <div><img class="mx-auto d-block"
+              src="{% url 'object_feed' %}"
+              alt="Detected Stream" width="75%"></div>
+          <div><img class="mx-auto d-block"
+            src="{% url 'object_feed' %}"
+            alt="Detected Stream" width="75%"></div>
+          <div><img class="mx-auto d-block"
+            src="{% url 'object_feed' %}"
+            alt="Detected Stream" width="75%"></div>
+            
+          
+          <div class="text-center mt-3">
+            <button type="button" class="btn btn-outline-success">Hook</button>
+            <button type="button" class="btn btn-outline-danger">Unhook</button>
+          </div>
+        </div>
+
+      </div>
+
+
+
+      <div class="col-md-5">
+        <div id="chart" class="my-3" style="height: 35vh;"></div>
+        <div class="terminal my-3">
+          <pre style="overflow-x: hidden; overflow-y:auto">
+
+
+
+   <table>
+              <tr>
+                <th style="text-align:center">Label</th>
+                <th style="text-align:center">Time</th>
+                <th style="text-align:center">Confidence</th>
+                <th style="text-align:center">FPS</th>     
+              </tr>
+              <tr>
+                <td>unHooking  </td>
+                <td> 13:28:15  </td>
+                <td> 0.99%  </td>     
+                <td style="text-align:center">0</td>
+              </tr>
+              <tr>
+                <td>unHooking  </td>
+                <td> 13:28:15  </td>
+                <td> 0.98%  </td>          
+                <td style="text-align:center">0</td>
+              </tr>
+              <tr>
+                <td>attemToHooking  </td>
+                <td> 13:28:15  </td>
+                <td> 0.98%  </td>          
+                <td style="text-align:center">0</td>
+              </tr>
+              <tr>
+                <td>Hooking  </td>
+                <td> 13:28:15  </td>
+                <td> 0.99%  </td>  
+                <td style="text-align:center">0</td>
+              </tr>
+              <tr>
+                <td>Hooking  </td>
+                <td> 13:28:15  </td>
+                <td> 0.99%  </td>
+                <td style="text-align:center">0</td>
+              </tr>
+            </table>
+            </pre>
+        </div>
+      </div>
+
+
+
+    </div>
+  </div>
+  </div>
+
+
+
+  <script>
+
+    anychart.onDocumentReady(function () {
+
+      // create a data set on our data
+      var dataSet = anychart.data.set(getData());
+
+      // map data for the first series,
+      // take x from the zero column and value from the first column
+      var firstSeriesData = dataSet.mapAs({ x: 0, value: 1 });
+
+      // map data for the second series,
+      // take x from the zero column and value from the second column
+      var secondSeriesData = dataSet.mapAs({ x: 0, value: 2 });
+
+      // map data for the third series,
+      // take x from the zero column and value from the third column 
+      var thirdSeriesData = dataSet.mapAs({ x: 0, value: 3 });
+
+      // map data for the fourth series,
+      // take x from the zero column and value from the fourth column
+      var fourthSeriesData = dataSet.mapAs({ x: 0, value: 4 });
+
+      // create a line chart
+      var chart = anychart.line();
+
+      // turn on the line chart animation
+      chart.animation(true);
+
+      // configure the chart title text settings
+      chart.title('Time wise object detection chart');
+
+      // set the y axis title
+      chart.yAxis().title('% of object detected in a minute');
+
+      // turn on the crosshair
+      chart.crosshair().enabled(true).yLabel(false).yStroke(null);
+
+      // create the first series with the mapped data
+      var firstSeries = chart.line(firstSeriesData);
+      firstSeries
+        .name('detectionLine')
+        .stroke('3 #f49595')
+        .tooltip()
+        .format("Age group 18-34 : {%value}%");
+
+      // create the second series with the mapped data
+      // var secondSeries = chart.line(secondSeriesData);
+      // secondSeries
+      //   .name('35-49')
+      //   .stroke('3 #f9eb97')
+      //   .tooltip()
+      //   .format("Age group 35-49 : {%value}%");
+
+      // create the third series with the mapped data
+      // var thirdSeries = chart.line(thirdSeriesData);
+      // thirdSeries
+      //   .name('50-64')
+      //   .stroke('3 #a8d9f6')
+      //   .tooltip()
+      //   .format("Age group 50-64 : {%value}%");
+
+      // create the fourth series with the mapped data
+      // var fourthSeries = chart.line(fourthSeriesData);
+      // fourthSeries
+      //   .name('65+')
+      //   .stroke('3 #e2bbfd')
+      //   .tooltip()
+      //   .format("Age group 65+ : {%value}%");
+
+      // turn the legend on
+      chart.legend().enabled(true);
+
+      // set the container id for the line chart
+      chart.container('chart');
+
+      // draw the line chart
+      chart.draw();
+
+    });
+
+    function getData() {
+      return [
+        ['03:00', 16.9, 12.2, 10.2, 5.2],
+        ['04:00', 17, 17.8, 10, 4.8],
+        ['05:00', 26.5, 23.8, 16.8, 6.6],
+        ['06:00', 28.7, 22, 17.3, 9.1],
+        ['07:00', 35.7, 24, 22.6, 9.2],
+        ['08:00', 37.2, 24.6, 22.4, 11.2],
+        ['09:00', 36.5, 26.2, 23.7, 9.9],
+        ['10:00', 40, 34.4, 23.8, 16.4],
+        ['11:00', 33.3, 28.8, 32.5, 14.3],
+        ['12:00', 40.2, 32.1, 27.5, 15.1],
+        ['13:00', 49.3, 37.2, 31.4, 17.1],
+        ['14:00', 51.9, 42.5, 36.1, 28.5],
+        ['15:00', 53.1, 43.8, 36, 24.6],
+        ['16:00', 63.7, 45.9, 44.7, 31.3],
+        ['17:00', 66.3, 52, 42.3, 37.2],
+        ['18:00', 70.1, 57.7, 49.2, 39]
+      ];
+    }
+  </script>
+
+
+
+  <!-- Bootstrap JS and Popper.js -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js" integrity="sha384-W8fXfP3gkOKtndU4JGtKDvXbO53Wy8SZCQHczT5FMiiqmQfUpWbYdTil/SxwZgAN" crossorigin="anonymous"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.min.js"
+    integrity="sha384-skAcpIdS7UcVUC05LJ9Dxay8AXcDYfBJqt1CJ85S/CFujBsIzCIv+l9liuYLaMQ/"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/notie"></script>
+  <script src="{% static 'js/reconnecting-websocket.min.js' %}"></script>
+</body>
+
+</html>
